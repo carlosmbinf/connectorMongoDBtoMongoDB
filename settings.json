@@ -1,0 +1,66 @@
+{
+  "public": {
+    "type": "free",
+    "urlLogo": "https://s3.amazonaws.com/logos.varios/Logo-BestThings.png",
+    "site": "Membership",
+    "baseURL": "http://localhost:3020/",
+    "clubName": "clubname",
+    "secureApiForMembersData": {
+      "baseUri": "https://in.vrewardsapps.com"
+    },
+    "destroyDocsNotUploadedAfter": "60",
+    "contractNoPreposition": "MTYVR",
+    "payments": {
+      "stripe": {
+        "publicKey": "pk_test_yMVauyoDEGcJn5lk9gEhswiD009IsGahWi"
+      },
+      "banorte": {
+        "payw2url": "https://via.pagosbanorte.com/payw2",
+        "secure3Durl": "https://eps.banorte.com/secure3d/Solucion3DSecure.htm",
+        "forwardPath": "tests/payments/response-3D"
+      }
+    }
+  },
+  "private": {
+    "SES": {
+      "region": "us-east-1",
+      "accessKeyId": "AKIAIDAOLWBZ633EMRTQ",
+      "secretAccessKey": "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",
+      "from": "activations@vacancyrewards.com",
+      "supportEmail": "support-vacancyrewards@gmail.com"
+    },
+    "emailToSendInitialUser": "vr@gmail.com",
+    "site": "www.vacancyrewards.com",
+    "api": {
+      "user": "user",
+      "password": "password"
+    },
+    "secureApiForMembersData": {
+      "credentials": {
+        "username": "admin_in",
+        "password": "password_in"
+      }
+    },
+    "secureApiForDPPayments": {
+      "uri": "http://secure.vacancyrewards.solutions/vacancyservices.asmx/POS_PaymentRequest",
+      "user": "Demo",
+      "password": "Demo123654"
+    },
+    "adminEmail": "admin@vr.com",
+    "payments": {
+      "stripe": {
+        "secretKey": "sk_test_yKcfFYmbpeJHfx5PuXtno8lr00nTwdmyfO"
+      },
+      "banorte": {
+        "USER": "a8129567",
+        "PASSWORD": "'yG9Q1)n%",
+        "TERMINAL_ID": "81295671",
+        "MERCHANT_ID": 8129567,
+        "merchantName": "ASTUTO TRAVEL",
+        "merchantCity": "CANCUN",
+        "mode": "AUT",
+        "RESPONSE_LANGUAGE": "EN"
+      }
+    }
+  }
+}
