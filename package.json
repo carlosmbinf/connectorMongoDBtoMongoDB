@@ -21,6 +21,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "simpleddp": "^2.2.4",
+    "simpleddp-plugin-login": "^4.0.2",
     "ws": "^7.4.5"
   },
   "meteor": {
