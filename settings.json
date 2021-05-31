@@ -2,12 +2,12 @@
   "public": {},
   "private": {
     "host_first": {
-      "host": "10.2.2.135",
-      "port": 3300,
+      "host": "localhost",
+      "port": 3020,
       "ssl": false,
       "credentials": {
-        "user": "userclubreinaroja",
-        "password": "g76sd9g87sdf69gd7f6g9df87g6d"
+        "user": "user",
+        "password": "password"
       }
     },
     "host_second": {
