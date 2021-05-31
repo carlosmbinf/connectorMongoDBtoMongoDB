@@ -10,6 +10,7 @@
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "api-ddp": "^2.0.8",
+    "bson": "^4.4.0",
     "config": "^3.3.6",
     "fs": "0.0.1-security",
     "isomorphic-ws": "^4.0.1",

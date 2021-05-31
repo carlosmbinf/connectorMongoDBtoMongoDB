@@ -5,10 +5,11 @@ const file = "D://meteor/data.json";
 
 
 
-Meteor.startup(async() => {
-  // If the Links collection is empty, add some data.
-  await conectMeteor()
-  // conectMeteor()
-
+Meteor.startup(() => {
+  try {
+  conectMeteor()
+  } catch (error) {
+    console.log('Error ' + error);
+  }
 });
 
