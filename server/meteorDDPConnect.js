@@ -28,7 +28,7 @@ export function conectMeteor() {
   server1.on("connected", async () => {
     // do something
     try {
-      //   await console.log("server1 connected: " + server1.connected);
+      await console.log("server1 connected: " + server1.connected);
       // await server1.subscribe("files.agreements.all").ready();
       // await server1.subscribe("files.scannedAgreements.all").ready();
       // await server1.subscribe("files.images.all").ready();
@@ -131,74 +131,112 @@ export function conectMeteor() {
   server2.on("login", async (m) => {
     try {
       await console.log("User logged in as", m);
+      var arrayAgreementsId = [];
+      var arrayImagesId =  [];
+      var arrayScannedAgreemetnsId = [];
+      var arrayFilesId = [];
 
-        await server1.subscribe("external.members.all",credential).ready();
+      await server1.subscribe("external.members.all", credential).ready();
       await console.log("Subscrito a Members");
-
-        await server1.call("getMembersAll").then((members) => {
-          members.forEach((member) => {
+      await server1.call("getMembersAll").then((members) => {
+        members.forEach((member) => {
+          try {
             server2
-              .call("externalInsertMember",{user:'user',password:'password'}, member)
-              .then(() => {});
-            // console.log('member: ' + JSON.stringify(member));
-          });
-          console.log("copia de Member terminado");
+              .call(
+                "externalInsertMember",
+                { user: "user", password: "password" },
+                member
+              )
+              .then(() => {
+                console.log("copia de member: " + member._id + " terminado");
+              });
+          } catch (error) {
+            console.log(error);
+          }
+          // console.log('member: ' + JSON.stringify(member));
         });
+      });
 
-        ////////////// getAgreementsAll ///////////////////
-        await server1.subscribe("files.agreements.all").ready();
+      ////////////// getAgreementsAll /////////////////// 
+      await server1.subscribe("files.agreements.all").ready();
 
-        await server1.call("getAgreementsAll").then((data) => {
-          data.forEach((Agreement) => {
-            server2.call("setAgreementsAll", Agreement).then(() => {});
-
-            // console.log('Agreement: ' + JSON.stringify(Agreement));
-          });
-          console.log("copia de Agreements terminado");
+      await server1.call("getAgreementsAll").then((data) => {
+        data.forEach((Agreement) => {
+          try {
+            arrayAgreementsId.push({ _id: Agreement._id });
+            server2.call("setAgreementsAll", Agreement).then(() => {
+              console.log(
+                "copia de Agreement: " + Agreement._id + " terminado"
+              );
+            });
+          } catch (error) {
+            console.log(error);
+          }
+          // console.log('Agreement: ' + JSON.stringify(Agreement));
         });
+      });
 
-        ////////////////// getScannedAgreementsAll ///////////////////
-        await server1.subscribe("files.scannedAgreements.all").ready();
-        await server1.call("getScannedAgreementsAll").then((data) => {
-          data.forEach((ScannedAgreement) => {
+      ////////////////// getScannedAgreementsAll ///////////////////
+      await server1.subscribe("files.scannedAgreements.all").ready();
+      await server1.call("getScannedAgreementsAll").then((data) => {
+        data.forEach((ScannedAgreement) => {
+          try {
+            arrayScannedAgreemetnsId.push({ _id: ScannedAgreement._id });
             server2
               .call("setScannedAgreementsAll", ScannedAgreement)
-              .then(() => {});
-
-            // console.log('ScannedAgreement: ' + JSON.stringify(ScannedAgreement));
-          });
-          console.log("copia de ScannedAgreements terminado");
+              .then(() => {
+                console.log(
+                  "copia de ScannedAgreement: " +
+                    ScannedAgreement._id +
+                    " terminado"
+                );
+              });
+          } catch (error) {
+            console.log(error);
+          }
+          // console.log('ScannedAgreement: ' + JSON.stringify(ScannedAgreement));
         });
+      });
 
-        ////////////////// getImagesAll ///////////////////
-        await server1.subscribe("files.images.all").ready();
-        await server1.call("getImagesAll").then((data) => {
-          data.forEach((Image) => {
-            server2.call("setImagesAll", Image).then(() => {});
-
-            // console.log('Image: ' + JSON.stringify(Image));
-          });
-          console.log("copia de Images terminado");
+      ////////////////// getImagesAll ///////////////////
+      await server1.subscribe("files.images.all").ready();
+      await server1.call("getImagesAll").then((data) => {
+        data.forEach((Image) => {
+          try {
+            arrayImagesId.push({ _id: Image._id });
+            server2.call("setImagesAll", Image).then(() => {
+              console.log("copia de Image: " + Image._id + " terminado");
+            });
+          } catch (error) {
+            console.log(error);
+          }
+          // console.log('Image: ' + JSON.stringify(Image));
         });
+      });
 
-      //////////////////////// getfilesAll ////////////////////////////////
+      //////////////////////// getDocuments ////////////////////////////////
       await server1.subscribe("Documents").ready();
       await console.log("Subscrito a Documents");
 
       await server1.call("getDocuments", credential).then((data) => {
         try {
-          data.forEach((document) => {
-            server2
-              .call(
-                "insertDocument",
-                { user: "user", password: "password" },
-                document
-              )
-              .then(() => {});
-
-            console.log("Documents: " + JSON.stringify(document));
+          data && data.forEach((document) => {
+            try {
+              console.log("Documents: " + JSON.stringify(document));
+              server2
+                .call(
+                  "setDocument",
+                  document
+                )
+                .then(() => {
+                  console.log(
+                    "copia de document: " + document._id + " terminado"
+                  );
+                });
+            } catch (error) {
+              console.log(error);
+            }
           });
-          console.log("copia de Documents terminado");
         } catch (e) {
           console.log(e);
         }
@@ -206,34 +244,62 @@ export function conectMeteor() {
 
       //////////////////////// getfilesAll ////////////////////////////////
       await server1.subscribe("fs.files.all").ready();
-        await server1.call("getfilesAll").then( (data) => {
-          try {
-             JSON.parse(data).forEach((file) => {
-              server2.call("setfilesAll", file).then(() => {});
+      await console.log("Subscrito a fs.files.all");
+      await server1.subscribe("fs.chunk.all").ready();
+      await console.log("Subscrito a fs.chunk.all");
+      
+      await server1
+        .call(
+          "getfilesAll",
+          arrayAgreementsId,
+          arrayImagesId,
+          arrayScannedAgreemetnsId
+        )
+        .then(async (data) => {
+           await JSON.parse(data).forEach(async(file) => {
+            //  await arrayFilesId.push({ _id: file._id });
+             await server2.call("setfilesAll", file).then(() => {
+               console.log(
+                 "copia de file: " + JSON.stringify(file._id) + " terminado"
+               );
+             });
 
-              console.log('file: ' + JSON.stringify(file));
+             await console.log("file: " + JSON.stringify(file));
 
+             await server1.call("getchunksAll", file._id).then((data) => {
+               JSON.parse(data).forEach(async (chunk) => {
+                 await console.log(
+                   "copiando los datos del file " +
+                     file._id._str +
+                     " - chunkID: " +
+                     chunk._id._str +
+                     " terminado"
+                 );
+
+                 await server2.call("setchunksAll", chunk).then(async () => {
+                   await console.log(
+                     "copia de chunk: " + chunk._id._str + " terminado"
+                   );
+                 });
+               });
+             });
+              
             });
-             console.log("copia de fs.files terminado");
-          } catch (e) {
-            console.log(e);
-          }
+
         });
 
-      ////////////////////// getchunksAll ////////////////////////////////
-      // await server1.subscribe("fs.chunk.all").ready();
-      // await server1.call("getchunksAll").then(async (data) => {
-      //   try {
-      //     await JSON.parse(data).forEach(async (chunk) => {
-      //       await server2.call("setchunksAll", chunk).then(() => {});
 
-      //       await console.log('chunk: ' + JSON.stringify(chunk));
+      // //////////////////// getchunksAll ////////////////////////////////
+      
+      // (arrayFilesId.length>0) && await server1.call("getchunksAll", arrayFilesId).then((data) => {
+      //     JSON.parse(data).forEach((chunk) => {
+      //         server2.call("setchunksAll", chunk).then(() => {
+      //           console.log("copia de chunk: " + chunk._id + " terminado");
+      //         });
+      //       console.log("chunk: " + JSON.stringify(chunk));
       //     });
-      //     await console.log("copia de fs.chunks terminado");
-      //   } catch (e) {
-      //     console.log(e);
-      //   }
       // });
+
       
     } catch (error) {
       console.log(error);
