@@ -101,11 +101,6 @@ export function conectMeteor() {
   //   console.log("disconnected");
   // });
 
-  // server1.on("error", (e) => {
-  //   // global errors from server1
-  //   console.log("Error: " + e);
-  // });
-
   server2.on("connected", async () => {
     try {
       await console.log("server2 connected: " + server2.connected);
@@ -132,7 +127,7 @@ export function conectMeteor() {
     try {
       await console.log("User logged in as", m);
       var arrayAgreementsId = [];
-      var arrayImagesId =  [];
+      var arrayImagesId = [];
       var arrayScannedAgreemetnsId = [];
       var arrayFilesId = [];
 
@@ -157,8 +152,9 @@ export function conectMeteor() {
         });
       });
 
-      ////////////// getAgreementsAll /////////////////// 
+      ////////////// getAgreementsAll ///////////////////
       await server1.subscribe("files.agreements.all").ready();
+      await console.log("Subscrito a files.agreements.all");
 
       await server1.call("getAgreementsAll").then((data) => {
         data.forEach((Agreement) => {
@@ -178,6 +174,8 @@ export function conectMeteor() {
 
       ////////////////// getScannedAgreementsAll ///////////////////
       await server1.subscribe("files.scannedAgreements.all").ready();
+      await console.log("Subscrito a files.scannedAgreements.all");
+
       await server1.call("getScannedAgreementsAll").then((data) => {
         data.forEach((ScannedAgreement) => {
           try {
@@ -200,6 +198,8 @@ export function conectMeteor() {
 
       ////////////////// getImagesAll ///////////////////
       await server1.subscribe("files.images.all").ready();
+      await console.log("Subscrito a files.images.all");
+
       await server1.call("getImagesAll").then((data) => {
         data.forEach((Image) => {
           try {
@@ -220,34 +220,123 @@ export function conectMeteor() {
 
       await server1.call("getDocuments", credential).then((data) => {
         try {
-          data && data.forEach((document) => {
-            try {
-              console.log("Documents: " + JSON.stringify(document));
-              server2
-                .call(
-                  "setDocument",
-                  document
-                )
-                .then(() => {
+          data &&
+            data.forEach((document) => {
+              try {
+                // console.log("Documents: " + JSON.stringify(document));
+                server2.call("setDocument", document).then(() => {
                   console.log(
                     "copia de document: " + document._id + " terminado"
                   );
                 });
-            } catch (error) {
-              console.log(error);
-            }
-          });
+              } catch (error) {
+                console.log(error);
+              }
+            });
         } catch (e) {
           console.log(e);
         }
       });
 
+      //////////////////////// MembershipTypes ////////////////////////////////
+      await server1.subscribe("MembershipTypes").ready();
+      await console.log("Subscrito a MembershipTypes");
+
+      await server1.call("getMembershipTypes", credential).then((data) => {
+        try {
+          data &&
+            data.forEach((membershipTypes) => {
+              try {
+                // console.log("MembershipTypes: " + JSON.stringify(membershipTypes));
+                server2
+                  .call(
+                    "insertMembershipType",
+                    { user: "user", password: "password" },
+                    membershipTypes
+                  )
+                  .then(() => {
+                    console.log(
+                      "copia de membershipTypes: " +
+                        membershipTypes._id +
+                        " terminado"
+                    );
+                  });
+              } catch (error) {
+                console.log(error);
+              }
+            });
+        } catch (e) {
+          console.log(e);
+        }
+      });
+
+      // //////////////////////// Services ////////////////////////////////
+      // await server1.subscribe("Services").ready();
+      // await console.log("Subscrito a Services");
+
+      // await server1.call("getServices", credential).then((data) => {
+      //   try {
+      //     data &&
+      //       data.forEach((services) => {
+      //         try {
+      //           // console.log("Services: " + JSON.stringify(services));
+      //           server2
+      //             .call(
+      //               "setService",
+      //               services
+      //             )
+      //             .then(() => {
+      //               console.log(
+      //                 "copia de services: " +
+      //                   services._id +
+      //                   " terminado"
+      //               );
+      //             });
+      //         } catch (error) {
+      //           console.log(error);
+      //         }
+      //       });
+      //   } catch (e) {
+      //     console.log(e);
+      //   }
+      // });
+
+      // //////////////////////// AnnualFees ////////////////////////////////
+      // await server1.subscribe("AnnualFees").ready();
+      // await console.log("Subscrito a AnnualFees");
+
+      // await server1.call("getAnnualFees", credential).then((data) => {
+      //   try {
+      //     data &&
+      //       data.forEach((annualFee) => {
+      //         try {
+      //           console.log("AnnualFees: " + JSON.stringify(annualFee));
+      //           server2
+      //             .call(
+      //               "insertAnnualFee",
+      //               { user: "user", password: "password" },
+      //               annualFee
+      //             )
+      //             .then(() => {
+      //               console.log(
+      //                 "copia de annualFee: " + annualFee._id + " terminado"
+      //               );
+      //             });
+      //         } catch (error) {
+      //           console.log(error);
+      //         }
+      //       });
+      //   } catch (e) {
+      //     console.log(e);
+      //   }
+      // });
+
       //////////////////////// getfilesAll ////////////////////////////////
-      await server1.subscribe("fs.files.all").ready();
-      await console.log("Subscrito a fs.files.all");
       await server1.subscribe("fs.chunk.all").ready();
       await console.log("Subscrito a fs.chunk.all");
-      
+      await server1.subscribe("fs.files.all").ready();
+      await console.log("Subscrito a fs.files.all");
+
       await server1
         .call(
           "getfilesAll",
@@ -256,57 +345,57 @@ export function conectMeteor() {
           arrayScannedAgreemetnsId
         )
         .then(async (data) => {
-           await JSON.parse(data).forEach(async(file) => {
-            //  await arrayFilesId.push({ _id: file._id });
+          await JSON.parse(data).forEach(async (file) => {
+            
              await server2.call("setfilesAll", file).then(() => {
                console.log(
                  "copia de file: " + JSON.stringify(file._id) + " terminado"
                );
              });
 
-             await console.log("file: " + JSON.stringify(file));
+            await server1.call("getchunksAll", file._id).then((data) => {
+              JSON.parse(data).forEach(async (chunk) => {
+                await server2
+                  .call("existChunk", chunk._id)
+                  .then(async (count) => {
+                    await console.log(
+                      count > 0
+                        ? "Existe: " + chunk._id._str
+                        : "No existe " + chunk._id._str
+                    );
+                    (await (count == 0)) &&
+                      (await server2
+                        .call("setchunksAll", chunk)
+                        .then(async () => {
+                          await console.log(
+                            "copia de chunk: " + chunk._id._str + " terminado"
+                          );
+                        }));
+                  });
 
-             await server1.call("getchunksAll", file._id).then((data) => {
-               JSON.parse(data).forEach(async (chunk) => {
-                 await console.log(
-                   "copiando los datos del file " +
-                     file._id._str +
-                     " - chunkID: " +
-                     chunk._id._str +
-                     " terminado"
-                 );
-
-                 await server2.call("setchunksAll", chunk).then(async () => {
-                   await console.log(
-                     "copia de chunk: " + chunk._id._str + " terminado"
-                   );
-                 });
-               });
-             });
-              
+                await console.log(
+                  "copiando los datos del chunkID: " +
+                    chunk._id._str +
+                    " terminado"
+                );
+              });
             });
-
+          });
         });
-
-
-      // //////////////////// getchunksAll ////////////////////////////////
-      
-      // (arrayFilesId.length>0) && await server1.call("getchunksAll", arrayFilesId).then((data) => {
-      //     JSON.parse(data).forEach((chunk) => {
-      //         server2.call("setchunksAll", chunk).then(() => {
-      //           console.log("copia de chunk: " + chunk._id + " terminado");
-      //         });
-      //       console.log("chunk: " + JSON.stringify(chunk));
-      //     });
-      // });
-
-      
     } catch (error) {
       console.log(error);
     }
   });
+  server1.on("error", (e) => {
+    // global errors from server1
+    console.log("Error server1: " + e);
+  });
   server1.on("disconnected", () => {
     console.log("Disconnected server1");
+  });
+  server2.on("error", (e) => {
+    // global errors from server1
+    console.log("Error server2: " + e);
   });
   server2.on("disconnected", () => {
     console.log("Disconnected server2");
@@ -314,4 +403,5 @@ export function conectMeteor() {
   server2.on("ready", () => {
     console.log("ready server2");
   });
+
 }
