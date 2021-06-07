@@ -9,6 +9,9 @@ export function conectMeteor() {
   const host_first = Meteor.settings.private.host_first.host;
   const port_first = Meteor.settings.private.host_first.port;
 
+  const credentialsecond = Meteor.settings.private.host_second.credentials;
+  const host_second = Meteor.settings.private.host_second.host;
+  const port_second = Meteor.settings.private.host_second.port;
   //   console.log(meteor1.status());
 
   // https://casalinda.vacancyrewards.com/
@@ -18,7 +21,7 @@ export function conectMeteor() {
     reconnectInterval: 5000,
   };
   let opts2 = {
-    endpoint: "ws://localhost:3022/websocket",
+    endpoint: "ws://" + host_second + ":" + port_second + "/websocket",
     SocketConstructor: ws,
     reconnectInterval: 5000,
   };
@@ -139,7 +142,7 @@ export function conectMeteor() {
             server2
               .call(
                 "externalInsertMember",
-                { user: "user", password: "password" },
+                credentialsecond,
                 member
               )
               .then(() => {
@@ -251,7 +254,7 @@ export function conectMeteor() {
                 server2
                   .call(
                     "insertMembershipType",
-                    { user: "user", password: "password" },
+                    credentialsecond,
                     membershipTypes
                   )
                   .then(() => {
@@ -314,7 +317,7 @@ export function conectMeteor() {
       //           server2
       //             .call(
       //               "insertAnnualFee",
-      //               { user: "user", password: "password" },
+      //               credentialsecond,
       //               annualFee
       //             )
       //             .then(() => {
@@ -332,10 +335,10 @@ export function conectMeteor() {
       // });
 
       //////////////////////// getfilesAll ////////////////////////////////
-      await server1.subscribe("fs.chunk.all").ready();
-      await console.log("Subscrito a fs.chunk.all");
-      await server1.subscribe("fs.files.all").ready();
-      await console.log("Subscrito a fs.files.all");
+      // await server1.subscribe("fs.chunk.all").ready();
+      // await console.log("Subscrito a fs.chunk.all");
+      // await server1.subscribe("fs.files.all").ready();
+      // await console.log("Subscrito a fs.files.all");
 
       await server1
         .call(
@@ -353,31 +356,35 @@ export function conectMeteor() {
                );
              });
 
-            await server1.call("getchunksAll", file._id).then((data) => {
-              JSON.parse(data).forEach(async (chunk) => {
-                await server2
-                  .call("existChunk", chunk._id)
-                  .then(async (count) => {
-                    await console.log(
-                      count > 0
-                        ? "Existe: " + chunk._id._str
-                        : "No existe " + chunk._id._str
-                    );
-                    (await (count == 0)) &&
-                      (await server2
-                        .call("setchunksAll", chunk)
+            await server1.call("getchunksAll", file._id).then((arrayIDchunks) => {
+              JSON.parse(arrayIDchunks).forEach(async (chunkId) => {
+                console.log(chunkId);
+                await server2.call("existChunk", chunkId).then(async (count) => {
+                  await console.log(
+                    count > 0
+                      ? "Existe: " + chunkId._str
+                      : "No existe " + chunkId._str
+                  );
+                !(count > 0) &&
+                  (await server1
+                    .call("getchunksById", chunkId)
+                    .then(async (chunk) => {
+                      await server2
+                        .call("setchunksAll", JSON.parse(chunk))
                         .then(async () => {
                           await console.log(
-                            "copia de chunk: " + chunk._id._str + " terminado"
+                            "copia de chunk: " + chunkId._str + " terminado"
                           );
-                        }));
-                  });
+                        });
+                    }));
+                });
 
-                await console.log(
-                  "copiando los datos del chunkID: " +
-                    chunk._id._str +
-                    " terminado"
-                );
+                // await console.log(
+                //   "copiando los datos del chunkID: " +
+                //     chunk._id._str +
+                //     " terminado"
+                // );
+
               });
             });
           });
