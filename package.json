@@ -1,35 +1,22 @@
 {
-  "name": "copydbmongo",
-  "private": true,
+  "name": "membershipcopy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
   "scripts": {
-    "start": "meteor run",
-    "test": "meteor test --once --driver-package meteortesting:mocha",
-    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
-    "visualize": "meteor --production --extra-packages bundle-visualizer"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@babel/runtime": "^7.11.2",
-    "api-ddp": "^2.0.8",
-    "bson": "^4.4.0",
-    "config": "^3.3.6",
     "fs": "0.0.1-security",
+    "http": "0.0.1-security",
     "isomorphic-ws": "^4.0.1",
     "jsonfile": "^6.1.0",
-    "lodash": "^4.17.21",
-    "meteor-node-stubs": "^1.0.1",
-    "mongodb": "^3.6.7",
+    "mongodb": "^3.6.9",
     "mongoimport": "^1.0.6",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "simpleddp": "^2.2.4",
     "simpleddp-plugin-login": "^4.0.2",
-    "ws": "^7.4.5"
-  },
-  "meteor": {
-    "mainModule": {
-      "client": "client/main.jsx",
-      "server": "server/main.js"
-    },
-    "testModule": "tests/main.js"
+    "ws": "^7.4.6"
   }
 }

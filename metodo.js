@@ -68,7 +68,8 @@ let exportDataBase = function (dburl, file) {
   });
 };
 
-let exportImportDataBase = function (dburl, file) {
+// exportImportDataBase("mongodb://localhost:3001/meteor","152.206.118.9:27017")
+let exportImportDataBase = function (dburl, hostDestino) {
   mongoClient.connect(dburl, (err, db) => {
     if (err) throw err;
     console.log("connnected");
@@ -105,11 +106,11 @@ let exportImportDataBase = function (dburl, file) {
               .toArray((err, data) => {
                 if (err) throw err;
                 mi({
-                    fields: collections, // {array} data to import
+                    fields: data, // {array} data to import
                     db: "meteor", // {string} name of db
                     collection: element.name, // {string|function} name of collection, or use a function to
                     //  return a name, accept one param - [fields] the fields to import
-                    host: "localhost:3001",
+                    host: hostDestino,
                     callback: (err, db) => {
                       err && console.error(err);
                     },

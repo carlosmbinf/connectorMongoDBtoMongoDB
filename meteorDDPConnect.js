@@ -3,18 +3,44 @@ const ws = require("isomorphic-ws");
 const simpleDDPLogin = require("simpleddp-plugin-login").simpleDDPLogin;
 const { Binary, ObjectID } = require("mongodb");
 
-export function conectMeteor() {
-  //   let meteor1 = await DDP.connect("ws://localhost:3020/websocket");
-  const credential = Meteor.settings.private.host_first.credentials;
-  const host_first = Meteor.settings.private.host_first.host;
-  const port_first = Meteor.settings.private.host_first.port;
 
-  const credentialsecond = Meteor.settings.private.host_second.credentials;
-  const host_second = Meteor.settings.private.host_second.host;
-  const port_second = Meteor.settings.private.host_second.port;
-  //   console.log(meteor1.status());
 
-  // https://casalinda.vacancyrewards.com/
+module.exports.conectMeteor = function () {
+  
+  const settings = {
+    "public": {},
+    "private": {
+      "host_first": {
+        "host": "10.2.2.218",
+        "port": 3300,
+        "ssl": false,
+        "credentials": {
+          "user": "userclubastutotravel",
+          "password": "s8sd7f6sdfdfsdfsd65f765"
+        }
+      },
+      "host_second": {
+        "host": "localhost",
+        "port": 3022,
+        "ssl": false,
+        "credentials": {
+          "user": "user",
+          "password": "password"
+        },
+        "email": "admin@vr.com",
+        "password": "PMkg7J8GYHRRrpRfi"
+      }
+    }
+  }
+  
+  const credential = settings.private.host_first.credentials;
+  const host_first = settings.private.host_first.host;
+  const port_first = settings.private.host_first.port;
+  
+  const credentialsecond = settings.private.host_second.credentials;
+  const host_second = settings.private.host_second.host;
+  const port_second = settings.private.host_second.port;
+  
   let opts1 = {
     endpoint: "ws://" + host_first + ":" + port_first + "/websocket",
     SocketConstructor: ws,
@@ -25,8 +51,16 @@ export function conectMeteor() {
     SocketConstructor: ws,
     reconnectInterval: 5000,
   };
+
+  
+  //   let meteor1 = await DDP.connect("ws://localhost:3020/websocket");
+
+  //   console.log(meteor1.status());
+
+  // https://casalinda.vacancyrewards.com/
+  
   const server1 = new simpleDDP(opts1);
-  const server2 = new simpleDDP(opts2, [simpleDDPLogin]);
+const server2 = new simpleDDP(opts2, [simpleDDPLogin]);
 
   server1.on("connected", async () => {
     // do something
@@ -107,9 +141,9 @@ export function conectMeteor() {
   server2.on("connected", async () => {
     try {
       await console.log("server2 connected: " + server2.connected);
-      let password = Meteor.settings.private.host_second.password;
+      let password = settings.private.host_second.password;
       //  let username = "admin";
-      let email = Meteor.settings.private.host_second.email;
+      let email = settings.private.host_second.email;
       server1.connected
         ? await server2.login({
             password,
@@ -335,10 +369,10 @@ export function conectMeteor() {
       // });
 
       //////////////////////// getfilesAll ////////////////////////////////
-      // await server1.subscribe("fs.chunk.all").ready();
-      // await console.log("Subscrito a fs.chunk.all");
-      // await server1.subscribe("fs.files.all").ready();
-      // await console.log("Subscrito a fs.files.all");
+      await server1.subscribe("fs.chunk.all").ready();
+      await console.log("Subscrito a fs.chunk.all");
+      await server1.subscribe("fs.files.all").ready();
+      await console.log("Subscrito a fs.files.all");
 
       await server1
         .call(
@@ -358,14 +392,15 @@ export function conectMeteor() {
 
             await server1.call("getchunksAll", file._id).then((arrayIDchunks) => {
               JSON.parse(arrayIDchunks).forEach(async (chunkId) => {
-                console.log(chunkId);
-                await server2.call("existChunk", chunkId).then(async (count) => {
+                try {
+                  chunkId&&console.log(chunkId);
+                chunkId&&await server2.call("existChunk", chunkId).then(async (count) => {
                   await console.log(
                     count > 0
                       ? "Existe: " + chunkId._str
                       : "No existe " + chunkId._str
                   );
-                !(count > 0) &&
+                count == 0 &&
                   (await server1
                     .call("getchunksById", chunkId)
                     .then(async (chunk) => {
@@ -377,7 +412,11 @@ export function conectMeteor() {
                           );
                         });
                     }));
-                });
+                  });
+                } catch (error) {
+                  console.log(error);
+                }
+                
 
                 // await console.log(
                 //   "copiando los datos del chunkID: " +
